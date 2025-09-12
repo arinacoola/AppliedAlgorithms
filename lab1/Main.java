@@ -7,10 +7,21 @@ public class Main {
         SparseSet setA = createRandomSet(100000, 80000, 5);
         SparseSet setB = createRandomSet(100000, 80000, 5);
 
-        System.out.print("Set A: ");
+        System.out.print("\nSet A: ");
         printSet(setA);
+
+        setA.insert(70456);
+        setA.insert(69089);
+        System.out.print("\nSet A after adding elements 70456 and 69089 to the set: ");
+        printSet(setA);
+        setA.delete(69089);
+        System.out.print("\nSet A after removing element 69089: ");
+        printSet(setA);
+
+
         System.out.print("\nSet B: ");
         printSet(setB);
+
 
         SparseSet union = setA.union(setB);
         System.out.print("\nUnion: ");

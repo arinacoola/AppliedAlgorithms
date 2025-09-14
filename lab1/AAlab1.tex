@@ -1,0 +1,235 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[ukrainian]{babel}
+\usepackage{geometry}
+\geometry{left=25mm,right=15mm,top=20mm,bottom=20mm}
+\usepackage{setspace}
+\setstretch{1.2}
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \normalsize
+    НАЦІОНАЛЬНИЙ ТЕХНІЧНИЙ УНІВЕРСИТЕТ УКРАЇНИ\\
+    «КИЇВСЬКИЙ ПОЛІТЕХНІЧНИЙ ІНСТИТУТ ім. Ігоря СІКОРСЬКОГО»\\
+    НАВЧАЛЬНО-НАУКОВИЙ ФІЗИКО-ТЕХНІЧНИЙ ІНСТИТУТ
+    
+    \vfill
+    
+    \LARGE Звіт з дисципліни «Прикладні алгоритми»\\[2em]
+    \Large\textbf{ВАРІАНТ 4}\\[1em]
+    \LARGE\textbf{РЕАЛІЗАЦІЯ МНОЖИН ЗА ДОПОМОГОЮ}\\[0.4em]
+    \LARGE\textbf{ТИПУ SPARSESET}
+    
+    \vfill
+    
+    \begin{flushright}
+        \large
+        Виконала студентка\\
+        групи ФІ-33\\
+        Зварунчик Аріна Олександрівна
+    \end{flushright}
+    
+    \vspace{3em}
+    Київ — 2025
+\end{titlepage}
+
+\tableofcontents 
+\newpage
+
+\section{Мета роботи}
+Опанувати способи представлення множин та їх ефективної реалізації, 
+проаналізувати швидкість роботи операцій над множинами у заданій реалізації: 
+за допомогою типу \texttt{SparseSet}.
+
+\section{Опис структури класу \texttt{SparseSet}}
+Клас \texttt{SparseSet} реалізує множину за допомогою двох масивів:
+одного для збереження елементів множини (\texttt{dense})
+та іншого для збереження індексів елементів у \texttt{dense} (\texttt{sparse}).
+
+Універсумом виступає множина цілих невідʼємних чисел.Реалізація підтримує значення \texttt{maxVal} та \texttt{capacity} не менші за $65536$.
+
+Також ініціалізуються такі параметри:
+\begin{itemize}
+    \item \texttt{maxVal} --- максимальне значення елементів множини;
+    \item \texttt{capacity} --- максимальний розмір множини;
+    \item \texttt{n} --- поточна кількість елементів у множині.
+\end{itemize}
+
+\subsection{Методи класу \texttt{SparseSet}}
+\begin{itemize}
+    \item public int search(int x) :
+    \begin{itemize}
+        \item[-]перевіряє наявність елемента $x$ у множині, повертає його індекс у \texttt{dense} або ${-1}$, якщо елемент відсутній.
+        \item [-]складність: $O(1)$
+    \end{itemize}
+    \item  public void insert(int x):
+    \begin{itemize}
+        \item [-]додає елемент $x$ до множини, якщо його ще немає і не перевищено \texttt{capacity}.
+        \item[-] складність: $O(1)$
+    \end{itemize}
+     \item public void delete(int x) :
+    \begin{itemize}
+        \item[-] видаляє елемент $x$ з множини, замінюючи його останнім елементом у \texttt{dense}.
+        \item[-] складність: $O(1)$
+    \end{itemize}
+     \item public void clear() :
+    \begin{itemize}
+        \item[-] робить множину порожньою.
+        \item[-] складність: $O(1)$
+    \end{itemize}
+    
+    \item public SparseSet union(SparseSet s1) :
+    \begin{itemize}
+        \item[-] повертає нову множину, яка містить усі елементи поточної множини та \texttt{s1}.
+        \item[-] складність: $O(n)$
+    \end{itemize}
+
+    \item public SparseSet intersection(SparseSet s2) :
+    \begin{itemize}
+        \item[-] повертає нову множину, що містить елементи, які є в обох множинах.
+        \item[-] складність: $O(n)$
+    \end{itemize}
+
+    \item public SparseSet setDifference(SparseSet s3) :
+    \begin{itemize}
+        \item[-] повертає нову множину, що містить елементи поточної множини, яких немає у \texttt{s3}.
+        \item[-] складність: $O(n)$
+    \end{itemize}
+
+    \item public SparseSet symDifference(SparseSet s4) :
+    \begin{itemize}
+        \item[-] повертає нову множину, що містить елементи, які належать лише одній із двох множин.
+        \item[-] складність: $O(n )$
+    \end{itemize}
+
+    \item public boolean isSubset(SparseSet s5) :
+    \begin{itemize}
+        \item[-] перевіряє, чи всі елементи поточної множини належать \texttt{s5}; якщо поточна порожня множина, повертає true.
+        \item[-] складність: $O(n)$
+    \end{itemize}
+
+    \item public int size() :
+    \begin{itemize}
+        \item[-] повертає кількість елементів у множині.
+        \item[-] складність: $O(1)$
+    \end{itemize}
+
+\end{itemize}
+
+\section{Опис структури класу \texttt{Main}}
+Клас \texttt{Main} виконує роль демонстраційного та тестового класу для перевірки роботи типу даних \texttt{SparseSet}.
+\subsection{Методи класу \texttt{Main}}
+\begin{itemize}
+    \item public static void main(String args[]) :
+    \begin{itemize}
+        \item[-] створює дві множини \texttt{setA} та \texttt{setB} за допомогою методу \texttt{createRandomSet}.
+        \item[-] демонструє роботу методів класу \texttt{SparseSet}: \texttt{insert, delete, union, intersection, setDifference, symDifference, isSubset}.
+        \item[-] виводить усі результати на екран за допомогою методу \texttt{printSet}.
+    \end{itemize}
+
+    \item private static SparseSet createRandomSet(int maxVal, int capacity, int n) :
+    \begin{itemize}
+        \item[-] створює нову множину \texttt{SparseSet} з заданими параметрами.
+        \item[-] заповнює множину $n$ випадковими числами в діапазоні від $0$ до \texttt{maxVal}.
+        \item[-] повертає створену множину.
+    \end{itemize}
+
+    \item private static void printSet(SparseSet s) :
+    \begin{itemize}
+        \item[-] виводить елементи множини.
+    \end{itemize}
+\end{itemize}
+
+\section{Опис структури класу \texttt{Experiments}}
+Клас \texttt{Experiments} використовується для експериментального визначення часу роботи операцій, реалізованих через клас \texttt{SparseSet}, у залежності від розміру
+множини.  
+
+\subsection{Методи класу \texttt{Experiments}}
+\begin{itemize}
+    \item public static void main(String[] args) :
+    \begin{itemize}
+        \item[-] задає параметри експерименту: масив розмірів множин \texttt{sizes}, \texttt{maxVal},  \texttt{capacity} та кількість експериментів \texttt{exper}.  
+        \item[-] для кожного розміру множини генерує випадкову множину за допомогою \texttt{generateRandomSet}.  
+        \item[-] вимірює час пошуку елементів, що належать множині, та тих, яких немає.  
+        \item[-] вимірює час виконання операції об'єднання множин \texttt{union}.  
+        \item[-] виводить результати експериментів у консоль.  
+        \item[-] створює графік результатів через клас \texttt{ResultsChart}.
+    \end{itemize}
+
+    \item private static SparseSet generateRandomSet(int maxVal, int capacity, int size) :
+    \begin{itemize}
+        \item[-] створює порожню множину \texttt{SparseSet} з параметрами \texttt{maxVal} і \texttt{capacity}.  
+        \item[-] заповнює множину \texttt{size} унікальними випадковими числами від 0 до \texttt{maxVal}.  
+        \item[-] повертає створену множину для використання в експерименті.
+    \end{itemize}
+\end{itemize}
+
+\section{Опис структури класу \texttt{ResultsChart }} 
+Клас \texttt{ResultsChart} використовується для візуалізації результатів експериментів, виконаних над множинами \texttt{SparseSet}.  
+
+\subsection{Методи класу \texttt{ResultsChart }}
+\begin{itemize}
+    \item public ResultsChart(int[] sizes, double[] timeIn, double[] timeNotIn, double[] timeUnion) :
+    \begin{itemize}
+        \item[-] конструктор класу, який створює та відображає графіки результатів експериментів.  
+        \item[-] викликає методи \texttt{createSearchChart} та \texttt{createUnionChart}.
+    \end{itemize}
+
+    \item private void createSearchChart(int[] sizes, double[] timeIn, double[] timeNotIn) :
+    \begin{itemize}
+        \item[-] формує набір даних для графіка часу виконання операції \texttt{search}(коли еоемент належить  множині і коли ні).  
+        \item[-] створює лінійний графік із підписами осей та легендою.  
+        \item[-] відображає графік за допомогою методу \texttt{showChart}.
+    \end{itemize}
+
+    \item private void createUnionChart(int[] sizes, double[] timeUnion) :
+    \begin{itemize}
+        \item[-] формує набір даних для графіка часу виконання операції об'єднання множин \texttt{union}.  
+        \item[-] створює лінійний графік із підписами осей та легендою.  
+        \item[-] відображає графік за допомогою методу \texttt{showChart}.
+    \end{itemize}
+
+    \item private void showChart(JFreeChart chart, String title) :
+    \begin{itemize}
+        \item[-] створює вікно \texttt{JFrame} із графіком \texttt{chart} та заголовком \texttt{title}.  
+        \item[-] встановлює розмір вікна, позицію на екрані та робить його видимим.
+    \end{itemize}
+\end{itemize}
+
+\section{Тестування швидкості} 
+\subsection{Результати методу \texttt{union}}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Знімок екрана 2025-09-14 о 02.36.03.png}
+    \caption{Порівняння продуктивності операції  \texttt{union} для різних розмірів множин.}
+    \label{fig:my_image}
+\end{figure}
+ По горизонтальній осі позначено розмір множини (\textit{n}), а по вертикальній — середній час виконання операції у мікросекундах.
+\textbf{Аналіз результатів:}  
+
+ Операція об'єднання \texttt{union} демонструє зростання часу виконання зі збільшенням розміру множин. На графіку видно, що для невеликих множин час виконання становить близько $80{-}150$ мікросекунд, а при збільшенні розміру до $40{,}000$–$60{,}000$ елементів час підвищується до $280{-}310$ мікросекунд. Це свідчить про  лінійну залежність часу від роміру множини, що відповідає алгоритмічній складності  $O(n)$ операції \texttt{union}. 
+
+ \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Знімок екрана 2025-09-14 о 02.48.08.png}
+    \caption{Порівняння продуктивності операції \texttt{search}(у залежності,коли елемент належить множині,а коли ні) для різних розмірів множин.}
+    \label{fig:my_image}
+\end{figure}
+\textbf{Аналіз результатів:}  
+На графіку представлено результати для двох випадків: 
+- пошук елемента, який належить множині (червона лінія), 
+- пошук елемента, який не належить множині (синя лінія).
+
+Як видно з результатів, середній час пошуку елемента практично не залежить від розміру множини й залишається майже сталим. Це відповідає алгоритмічній складності $O(1)$, характерній для структури даних \texttt{SparseSet}.  
+
+У середньому:  
+- пошук  елемента, який належить множині  займає близько $0.02{-}0.027$ мікросекунд,  
+- пошук елемента, який не належить множині трохи повільніший (близько $0.018{-}0.02$ мікросекунд).  
+
+Ця різниця пояснюється додатковими перевірками, необхідними для перевірки чи належить елемент множині.  
+
+\section{Мій репозиторій:} 
+\href{https://github.com/arinacoola/AppliedAlgorithms}
+\end{document}

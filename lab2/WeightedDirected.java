@@ -10,4 +10,25 @@ public class WeightedDirected extends Graph<Edge>{
         checkVertex(v);
         adjLists[u].add(new Edge(v,weight));
     }
+
+    void removeVertexW(int u){
+        checkVertex(u);
+        for (int i = 0; i < n; i++) {
+            if (i == u) continue;
+            for(int j = adjLists[i].size() - 1; j >= 0; j--){
+                Edge edge = adjLists[i].get(j);
+                if (edge.to == u) {
+                    adjLists[i].remove(j);
+                } else if (edge.to > u) {
+                    edge.to = edge.to - 1;
+                }
+            }
+        }
+        for (int i = u; i < n - 1; i++) {
+            adjLists[i] = adjLists[i + 1];
+        }
+        adjLists[n - 1] = null;
+        n--;
+
+    }
 }

@@ -8,4 +8,21 @@ public class WeightedUndirected extends Graph<Edge>{
         adjLists[u].add(new Edge(v,weight));
         adjLists[v].add(new Edge(u,weight));
     }
+
+    void deleteEdgeW(int u,int v){
+        checkVertex(u);
+        checkVertex(v);
+        for(int i=adjLists[u].size()-1;i>=0;i--){
+            Edge edge = adjLists[u].get(i);
+            if(edge.to==v){
+                adjLists[u].remove(i);
+            }
+        }
+        for(int i=adjLists[v].size()-1;i>=0;i--){
+            Edge edge = adjLists[v].get(i);
+            if(edge.to==u){
+                adjLists[v].remove(i);
+            }
+        }
+    }
 }

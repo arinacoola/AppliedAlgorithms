@@ -31,4 +31,15 @@ public class WeightedDirected extends Graph<Edge>{
         n--;
 
     }
+
+    void deleteEdgeW(int u,int v){
+        checkVertex(u);
+        checkVertex(v);
+        for(int i=adjLists[u].size()-1;i>=0;i--){
+            Edge edge = adjLists[u].get(i);
+            if(edge.to==v){
+                adjLists[u].remove(i);
+            }
+        }
+    }
 }

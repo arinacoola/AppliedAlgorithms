@@ -7,7 +7,7 @@ public class WeightedDirected extends Graph<Edge>{
         super(n);
     }
 
-    @Override
+
     public void addEdge(int u, int v) {
         throw new UnsupportedOperationException("there is no weight parameter for a weighted graph");
     }

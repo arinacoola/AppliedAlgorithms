@@ -4,6 +4,8 @@ public class Test {
     public static void main(String[] args) {
         testUndirected();
         testDirected();
+        testWeightedUndirected();
+        testWeightedDirected();
     }
 
     public static void printGraph(Graph<Integer> g) {
@@ -84,6 +86,58 @@ public class Test {
 
         g.BackAdjMatrix(matrix);
         printGraph(g);
+    }
+
+    public static void testWeightedUndirected() {
+        System.out.println("Testing Weighted Undirected Graph");
+        WeightedUndirected g = new WeightedUndirected(3);
+        g.addEdge(0,1,5);
+        g.addEdge(1,2,10);
+        printWeightedGraph(g);
+
+        g.deleteEdge(0,1);
+        printWeightedGraph(g);
+
+        g.addVertex();
+        g.addEdge(2,3,7);
+        printWeightedGraph(g);
+
+        g.deleteVertex(1);
+        printWeightedGraph(g);
+
+        int[][] matrix = g.convertToAdjMatrixW();
+        System.out.println("Weighted Adjacency Matrix: ");
+        for (int[] row : matrix) System.out.println(Arrays.toString(row));
+        System.out.println();
+
+        g.BackAdjMatrixW(matrix);
+        printWeightedGraph(g);
+    }
+
+    public static void testWeightedDirected() {
+        System.out.println("Testing Weighted Directed Graph");
+        WeightedDirected g = new WeightedDirected(3);
+        g.addEdge(0,1,3);
+        g.addEdge(1,2,8);
+        printWeightedGraph(g);
+
+        g.deleteEdge(0,1);
+        printWeightedGraph(g);
+
+        g.addVertex();
+        g.addEdge(2,3,6);
+        printWeightedGraph(g);
+
+        g.deleteVertex(1);
+        printWeightedGraph(g);
+
+        int[][] matrix = g.convertToAdjMatrixW();
+        System.out.println("Weighted Adjacency Matrix: ");
+        for (int[] row : matrix) System.out.println(Arrays.toString(row));
+        System.out.println();
+
+        g.BackAdjMatrixW(matrix);
+        printWeightedGraph(g);
     }
 
 }

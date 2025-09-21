@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 public class Undirected extends Graph<Integer>{
      public Undirected(int n) {
           super(n);
@@ -36,6 +38,22 @@ public class Undirected extends Graph<Integer>{
             }
         }
         return adjMatrix;
+    }
+
+    void BackAdjMatrix(int [][] adjMatrix){
+        for (int i = 0; i < n; i++) {
+            adjLists[i] = new LinkedList<>();
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (adjMatrix[i][j] != 0) {
+                    adjLists[i].add(j);
+                    adjLists[j].add(i);
+                }
+            }
+        }
+
+
     }
 
 

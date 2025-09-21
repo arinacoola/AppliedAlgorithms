@@ -59,6 +59,22 @@ public abstract class Graph<R> {
        return adjMatrix;
     }
 
+    void BackAdjMatrix(int [][] adjMatrix){
+        for (int i = 0; i < n; i++) {
+            adjLists[i] = new LinkedList<>();
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (adjMatrix[i][j] != 0) {
+                    adjLists[i].add((R)(Integer)j);
+                }
+            }
+        }
+
+
+    }
+
+
 
 
 

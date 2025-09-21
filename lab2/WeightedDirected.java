@@ -1,4 +1,7 @@
 import java.util.LinkedList;
+import java.util.Random;
+import java.util.stream.IntStream;
+
 public class WeightedDirected extends Graph<Edge>{
     public WeightedDirected(int n){
         super(n);
@@ -43,7 +46,7 @@ public class WeightedDirected extends Graph<Edge>{
         }
     }
 
-    public  int[][] convertToAdjMatrix1(){
+    public  int[][] convertToAdjMatrixW(){
         int[][] adjMatrix = new int[n][n];
         for(int i =0;i<n;i++){
             for( Edge edge:adjLists[i]){
@@ -53,7 +56,7 @@ public class WeightedDirected extends Graph<Edge>{
         return adjMatrix;
     }
 
-    void BackAdjMatrix(int [][] adjMatrix){
+    void BackAdjMatrixW(int [][] adjMatrix){
         for (int i = 0; i < n; i++) {
             adjLists[i] = new LinkedList<>();
             for (int j = 0; j < n; j++) {
@@ -62,5 +65,29 @@ public class WeightedDirected extends Graph<Edge>{
                 }
             }
         }
+    }
+
+    void erdosRenyi(int n, float p,int minWeight,int maxWeight ) {
+        this.n = n;
+        adjLists = new LinkedList[n];
+        for (int i = 0; i < n; i++) {
+            adjLists[i] = new LinkedList<>();
+        }
+        Random random = new Random();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                float edgeP = random.nextFloat();
+                if (edgeP < p) {
+                    int newWeight = random.nextInt(maxWeight-minWeight+1);
+                    addEdge(i, j,newWeight);
+                }
+            }
+
+        }
+    }
+
+    @Override
+    void addEdge(int u, int v) {
+
     }
 }

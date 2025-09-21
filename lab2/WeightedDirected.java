@@ -42,4 +42,14 @@ public class WeightedDirected extends Graph<Edge>{
             }
         }
     }
+
+    public  int[][] convertToAdjMatrix1(){
+        int[][] adjMatrix = new int[n][n];
+        for(int i =0;i<n;i++){
+            for( Edge edge:adjLists[i]){
+                adjMatrix[i][edge.to]=edge.weight;
+            }
+        }
+        return adjMatrix;
+    }
 }

@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 public class WeightedUndirected extends Graph<Edge>{
     public WeightedUndirected(int n){
         super(n);
@@ -36,4 +38,19 @@ public class WeightedUndirected extends Graph<Edge>{
         }
         return adjMatrix;
     }
+
+    void BackAdjMatrix(int [][] adjMatrix){
+        for (int i = 0; i < n; i++) {
+            adjLists[i] = new LinkedList<>();
+            for (int j = 0; j < n; j++) {
+                if (adjMatrix[i][j] != 0) {
+                    adjLists[i].add(new Edge(j, adjMatrix[i][j]));
+                    if (i != j) {
+                        adjLists[j].add(new Edge(i, adjMatrix[i][j]));
+                    }
+                }
+            }
+        }
+    }
+
 }

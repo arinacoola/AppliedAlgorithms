@@ -3,7 +3,6 @@ import java.util.Random;
 
 public abstract class Graph<R> {
     protected int n;
-    protected float p;
     protected LinkedList<R> adjLists[];
 
     public Graph(int vertices) {
@@ -15,7 +14,7 @@ public abstract class Graph<R> {
 
     }
 
-    void addVertex() {
+    public void addVertex() {
         n = n + 1;
         LinkedList<R> adjNewLists[] = new LinkedList[n];
         System.arraycopy(adjLists, 0, adjNewLists, 0, n - 1);
@@ -23,13 +22,13 @@ public abstract class Graph<R> {
         adjLists = adjNewLists;
     }
 
-    void checkVertex(int u) {
+    protected void checkVertex(int u) {
         if (u < 0 || u >= n) {
             throw new IndexOutOfBoundsException("The vertex does not exist: " + u);
         }
     }
 
-    void deleteVertex(int u) {
+    public void deleteVertex(int u) {
         checkVertex(u);
         for (int i = 0; i < n; i++) {
             if (i == u) continue;
@@ -61,24 +60,25 @@ public abstract class Graph<R> {
        return adjMatrix;
     }
 
-    void BackAdjMatrix(int [][] adjMatrix){
+    public void BackAdjMatrix(int [][] adjMatrix){
         for (int i = 0; i < n; i++) {
             adjLists[i] = new LinkedList<>();
         }
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (adjMatrix[i][j] != 0) {
-                    adjLists[i].add((R)(Integer)j);
+                    addEdge(i, j);
                 }
             }
         }
 
 
+
     }
 
-    abstract void addEdge(int u, int v);
+    public abstract void addEdge(int u, int v);
 
-    void erdosRenyi(int n, float p) {
+    public void erdosRenyi(int n, float p) {
         this.n = n;
         adjLists = new LinkedList[n];
         for (int i = 0; i < n; i++) {
@@ -87,8 +87,7 @@ public abstract class Graph<R> {
         Random random = new Random();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                float edgeP = random.nextFloat();
-                if (edgeP < p)
+                if (random.nextFloat() < p)
                     addEdge(i, j);
             }
         }

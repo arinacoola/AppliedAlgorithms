@@ -7,6 +7,10 @@ public class WeightedDirected extends Graph<Edge>{
         super(n);
     }
 
+    @Override
+    public void addEdge(int u, int v) {
+        throw new UnsupportedOperationException("there is no weight parameter for a weighted graph");
+    }
 
     void addEdge(int u,int v,int weight){
         checkVertex(u);
@@ -14,7 +18,8 @@ public class WeightedDirected extends Graph<Edge>{
         adjLists[u].add(new Edge(v,weight));
     }
 
-    void removeVertexW(int u){
+    @Override
+    public void deleteVertex(int u){
         checkVertex(u);
         for (int i = 0; i < n; i++) {
             if (i == u) continue;
@@ -35,15 +40,10 @@ public class WeightedDirected extends Graph<Edge>{
 
     }
 
-    void deleteEdgeW(int u,int v){
+    void deleteEdge(int u, int v) {
         checkVertex(u);
         checkVertex(v);
-        for(int i=adjLists[u].size()-1;i>=0;i--){
-            Edge edge = adjLists[u].get(i);
-            if(edge.to==v){
-                adjLists[u].remove(i);
-            }
-        }
+        adjLists[u].removeIf(edge -> edge.to == v);
     }
 
     public  int[][] convertToAdjMatrixW(){
@@ -67,7 +67,7 @@ public class WeightedDirected extends Graph<Edge>{
         }
     }
 
-    void erdosRenyi(int n, float p,int minWeight,int maxWeight ) {
+    void erdosRenyiWeighted(int n, float p,int minWeight,int maxWeight ) {
         this.n = n;
         adjLists = new LinkedList[n];
         for (int i = 0; i < n; i++) {
@@ -76,9 +76,8 @@ public class WeightedDirected extends Graph<Edge>{
         Random random = new Random();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                float edgeP = random.nextFloat();
-                if (edgeP < p) {
-                    int newWeight = random.nextInt(maxWeight-minWeight+1);
+                if (i != j && random.nextFloat() < p) {
+                    int newWeight = random.nextInt(maxWeight - minWeight + 1) + minWeight;
                     addEdge(i, j,newWeight);
                 }
             }
@@ -86,8 +85,4 @@ public class WeightedDirected extends Graph<Edge>{
         }
     }
 
-    @Override
-    void addEdge(int u, int v) {
-
-    }
 }

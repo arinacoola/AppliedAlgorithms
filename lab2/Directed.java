@@ -1,15 +1,15 @@
-public class Directed extends Graph{
+public class Directed extends Graph<Integer>{
     public Directed(int n){
         super(n);
     }
 
-    void addEdge(int u, int v){
+    public void addEdge(int u, int v){
         checkVertex(u);
         checkVertex(v);
         adjLists[u].add(v);
     }
 
-    void deleteEdge(int u,int v){
+    public void deleteEdge(int u,int v){
         checkVertex(u);
         checkVertex(v);
         for(int i=adjLists[u].size()-1;i>=0;i--){

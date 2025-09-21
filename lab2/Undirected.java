@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+import java.util.Random;
 
 public class Undirected extends Graph<Integer>{
      public Undirected(int n) {
@@ -55,6 +56,25 @@ public class Undirected extends Graph<Integer>{
 
 
     }
+
+    void erdosRenyi(int n, float p) {
+        this.n = n;
+        adjLists = new LinkedList[n];
+        for (int i = 0; i < n; i++)
+            adjLists[i] = new LinkedList<>();
+        Random random = new Random();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                float edgeP = random.nextFloat();
+                if (edgeP < p)
+                    addEdge(i, j);
+                    addEdge(j, i);
+            }
+        }
+
+    }
+
+
 
 
 

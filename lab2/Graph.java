@@ -1,7 +1,9 @@
 import java.util.LinkedList;
+import java.util.Random;
 
 public abstract class Graph<R> {
     protected int n;
+    protected float p;
     protected LinkedList<R> adjLists[];
 
     public Graph(int vertices) {
@@ -71,6 +73,24 @@ public abstract class Graph<R> {
             }
         }
 
+
+    }
+
+    abstract void addEdge(int u, int v);
+
+    void erdosRenyi(int n, float p) {
+        this.n = n;
+        adjLists = new LinkedList[n];
+        for (int i = 0; i < n; i++)
+            adjLists[i] = new LinkedList<>();
+        Random random = new Random();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                float edgeP = random.nextFloat();
+                if (edgeP < p)
+                    addEdge(i, j);
+            }
+        }
 
     }
 

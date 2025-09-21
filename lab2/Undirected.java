@@ -1,4 +1,4 @@
-public class Undirected extends Graph{
+public class Undirected extends Graph<Integer>{
      public Undirected(int n) {
           super(n);
      }
@@ -27,6 +27,16 @@ public class Undirected extends Graph{
          }
      }
 
+    public  int[][] convertToAdjMatrix() {
+        int[][] adjMatrix = new int[n][n];
+        for (int i =0;i<n;i++){
+            for( int j:adjLists[i]){
+                adjMatrix[i][j]=1;
+                adjMatrix[j][i]=1;
+            }
+        }
+        return adjMatrix;
+    }
 
 
 

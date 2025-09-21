@@ -47,6 +47,17 @@ public abstract class Graph<R> {
         n--;
     }
 
+    public  int[][] convertToAdjMatrix() {
+        int[][] adjMatrix = new int[n][n];
+        for (int i =0;i<n;i++){
+            for( R el:adjLists[i]){
+                int j = (Integer) el;
+                   adjMatrix[i][j]=1;
+
+            }
+        }
+       return adjMatrix;
+    }
 
 
 

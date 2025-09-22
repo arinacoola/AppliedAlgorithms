@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 public class WeightedUndirected extends Graph<Edge>{
@@ -66,21 +68,35 @@ public class WeightedUndirected extends Graph<Edge>{
         }
     }
 
-    public void erdosRenyiWeighted(int n, float p, int minWeight, int maxWeight){
+    public void erdosRenyiWeighted(int n, float p, int minWeight, int maxWeight) {
         this.n = n;
         adjLists = new LinkedList[n];
         for (int i = 0; i < n; i++) {
             adjLists[i] = new LinkedList<>();
         }
         Random random = new Random();
-        for (int i = 0; i < n; i++){
-            for (int j = i + 1; j < n; j++){
-                if(random.nextFloat() < p){
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (random.nextFloat() < p) {
                     int weight = random.nextInt(maxWeight - minWeight + 1) + minWeight;
                     addEdge(i, j, weight);
                 }
             }
         }
+
+
+    }
+
+    public List<String> exportEdgesAsJson() {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            for (Edge e : adjLists[i]) {
+                if (i < e.to) {
+                    result.add("[" + i + "," + e.to + "," + e.weight + "]");
+                }
+            }
+        }
+        return result;
     }
 }
 

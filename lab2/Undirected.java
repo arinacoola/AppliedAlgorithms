@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 public class Undirected extends Graph<Integer>{
@@ -46,6 +48,19 @@ public class Undirected extends Graph<Integer>{
         }
 
     }
+
+        public List<String> exportEdgesAsJson() {
+            List<String> result = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                for (Integer j : adjLists[i]) {
+                    if (i < j) result.add("[" + i + "," + j + "]");
+                }
+            }
+            return result;
+
+    }
+
+
 
 
 

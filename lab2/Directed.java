@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Directed extends Graph<Integer>{
     public Directed(int n){
         super(n);
@@ -18,6 +21,15 @@ public class Directed extends Graph<Integer>{
                 adjLists[u].remove(i);
             }
         }
+    }
+    public List<String> exportEdgesAsJson() {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            for (Integer j : adjLists[i]) {
+                result.add("[" + i + "," + j + "]");
+            }
+        }
+        return result;
     }
     }
 

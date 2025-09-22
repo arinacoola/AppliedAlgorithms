@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.Arrays;
 
 public class Test {
@@ -6,6 +7,19 @@ public class Test {
         testDirected();
         testWeightedUndirected();
         testWeightedDirected();
+
+        WeightedDirected g = new WeightedDirected(4);
+        g.addEdge(0, 1, 5);
+        g.addEdge(1, 2, 3);
+        g.addEdge(2, 3, 7);
+
+        try {
+            PythonGraphClient.sendGraphAndShowImage(g.exportEdgesAsJson(), true, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error sending graph " + e.getMessage());
+        }
+
     }
 
     public static void printGraph(Graph<Integer> g) {

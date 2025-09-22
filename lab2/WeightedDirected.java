@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -84,5 +86,16 @@ public class WeightedDirected extends Graph<Edge>{
 
         }
     }
+
+    public List<String> exportEdgesAsJson() {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            for (Edge e : adjLists[i]) {
+                result.add("[" + i + "," + e.to + "," + e.weight + "]");
+            }
+        }
+        return result;
+    }
+
 
 }

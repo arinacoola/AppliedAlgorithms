@@ -1,12 +1,19 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class Test3 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int[] sizes = {5, 10, 20, 50};
         double[] densities = {0, 0.2, 0.5, 0.8, 1.0};
         int trials = 100;
 
         System.out.println("n\t p\t   DFS_M\tDFS_M_con\t  DFS_L\tDFS_L_con\t  Warshall\tWarshall_con");
+
+        FileWriter writer = new FileWriter("graph_results.csv");
+        writer.write("n,p,DFS_M,DFS_L,Warshall\n");
+
 
         int[][] warmGraph = RandomGraphGenerator.generateMatrixGraph(10, 0.5);
         DFSConnectivity.isConnected(warmGraph);
@@ -53,7 +60,16 @@ public class Test3 {
                         dfsMatrixTime / 1e3 / trials, dfsMatrixResult,
                         dfsListTime / 1e3 / trials, dfsListResult,
                         warshallTime / 1e3 / trials, warshallResult);
+
+                writer.write(String.format(Locale.US, "%d,%.1f,%.2f,%.2f,%.2f\n",
+                        n, p,
+                        dfsMatrixTime / 1e3 / trials,
+                        dfsListTime / 1e3 / trials,
+                        warshallTime / 1e3 / trials));
+
             }
         }
+        writer.close();
+
     }
 }

@@ -1,0 +1,413 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[ukrainian]{babel}
+\usepackage{geometry}
+\geometry{left=25mm,right=15mm,top=20mm,bottom=20mm}
+\usepackage{setspace}
+\setstretch{1.2}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstdefinestyle{javastyle}{
+    language=Java,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    backgroundcolor=\color{white},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    rulecolor=\color{black},
+    tabsize=4,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=true,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{teal}\itshape,
+    stringstyle=\color{orange},
+    moredelim=[il][\textcolor{gray}]{//},
+    moredelim=[is][\textcolor{gray}]{/*}{*/},
+}
+
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \normalsize
+    НАЦІОНАЛЬНИЙ ТЕХНІЧНИЙ УНІВЕРСИТЕТ УКРАЇНИ\\
+    «КИЇВСЬКИЙ ПОЛІТЕХНІЧНИЙ ІНСТИТУТ ім. Ігоря СІКОРСЬКОГО»\\
+    НАВЧАЛЬНО-НАУКОВИЙ ФІЗИКО-ТЕХНІЧНИЙ ІНСТИТУТ
+    
+    \vfill
+    
+    \LARGE Звіт з дисципліни «Прикладні алгоритми»\\[2em]
+    \Large\textbf{ВАРІАНТ 2}\\[1em]
+    \LARGE\textbf{ПОРІВНЯЛЬНИЙ АНАЛІЗ АЛГОРИТМІВ НА ГРАФАХ}\\[0.4em]
+   
+    
+    \vfill
+    
+    \begin{flushright}
+        \large
+        Виконала студентка\\
+        групи ФІ-33\\
+        Зварунчик Аріна Олександрівна
+    \end{flushright}
+    
+    \vspace{3em}
+    Київ — 2025
+\end{titlepage}
+
+\tableofcontents 
+\newpage
+
+\section{Постановка завдачі}
+\textbf{Мета роботи:}
+дослідити вплив способу подання графа на ефективність алгоритмів перевірки зв’язності.
+
+
+Порівнюються три способи задання графу:
+\begin{enumerate}
+    \item Рекурсивний пошук у глибину \texttt{DFS}(реалізація графу за допомогою матриці);
+    \item Рекурсивний \texttt{DFS} (реалізація графу за допомогою списків суміжності);
+    \item \texttt{Алгоритм Уоршелла}.
+\end{enumerate}
+
+Порівняння  \texttt{DFS} у матричному представленні та  \texttt{DFS} на списках суміжності дає змогу проаналізувати,
+як саме структура даних впливає на ефективність одного й того самого алгоритму при різній щільності графів.
+Тому що реалізація матриці суміжності(вигідна,для щільних графів) дає змогу швидко перевірити наявність ребра між будь-якими двома вершинами, 
+ проте потребує досить багато пам’яті;а за допомогою списків суміжності(вигідна,для розріджених графів ми записуємо лише ті ребра, що реально існують,тому це представлення набагато менше вимагає пам'ятті.
+
+ \texttt{Алгоритм Уоршелла} працює лише з матричним представленням.
+
+
+\textbf{Вхідні дані:}
+Випадкові неорієнтовані графи  $G(n,p)$ з кількістю вершин $n \geq 5$
+та імовірністю появи ребра $p \in [0,1]$.
+
+\textbf{Вихідні дані:}
+Для кожної пари $(n,p)$ виводиться в консоль середній час виконання в мікросекундах трьох реалізацій.
+Результат користувач може побачити на графіках,для кращого розуміння.
+
+\section{Рекурсивний DFS}
+Для вперевірки зв’язності графа було реалізовано рекурсивний алгоритм пошуку в глибину \texttt{DFS}.
+Ідея алгоритму полягає у послідовному відвідуванні вершин, 
+до яких існує шлях від початкової вершини, 
+з позначенням уже відвіданих вершин. 
+Якщо після завершення обходу виявляється, що всі вершини були відвідані, 
+граф вважається зв’язним.
+
+Нижче наведено фрагмент коду реалізації алгоритму на мові \texttt{Java}:
+
+\begin{lstlisting}[style=javastyle]
+import java.util.List;
+
+public class DFSConnectivity {
+
+    public static boolean isConnected(int[][] graph) {
+        int n = graph.length;
+        boolean[] visited = new boolean[n];
+        dfsMatrix(graph, 0, visited);
+
+        for (boolean v : visited) {
+            if (!v) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void dfsMatrix(int[][] graph, int v, boolean[] visited) {
+        visited[v] = true;
+        for (int i = 0; i < graph.length; i++) {
+            if (graph[v][i] != 0 && !visited[i]) {
+                dfsMatrix(graph, i, visited);
+            }
+        }
+    }
+
+    public static boolean isConnected(List<List<Integer>> adjList) {
+        int n = adjList.size();
+        boolean[] visited = new boolean[n];
+        dfsList(adjList, 0, visited);
+
+        for (boolean v : visited) {
+            if (!v){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void dfsList(List<List<Integer>> adjList, int v, boolean[] visited) {
+        visited[v] = true;
+        for (int u : adjList.get(v)) {
+            if (!visited[u]) {
+                dfsList(adjList, u, visited);
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+\subsection{Параметри класу}
+\begin{itemize}
+    \item \texttt{n} --- кількість вершин графа;
+    \item \texttt{v} --- поточна вершина, з якої виконується рекурсивний обхід.
+    \item \texttt{int[][] graph}---матриця суміжності, 
+    у якій \texttt{graph[i][j] $ =1$ }, якщо між вершинами $i$ та $j$ існує ребро, 
+    і $0$, якщо ребра немає;
+    \item \texttt{List<List<Integer>> adjList} ---списки суміжності,де кожен елемент містить індекси суміжних вершин;
+    \item \texttt{boolean[] visited} ---зберігає інформацію про те, чи була вершина вже відвідана під час обходу;
+\end{itemize}
+
+Основними параметрами, що впливають на ефективність алгоритму:
+\begin{itemize}
+    \item $n$ --- кількість вершин;
+    \item$p$--- щільність графа;
+    \item спосіб подання графа (матриця суміжності або списки суміжності).
+\end{itemize}
+
+\section{Алгоритм Уоршелла}
+У даному розділі описується реалізація на мові програмування \texttt{Java }алгоритму Уоршелла для перевірки зв’язності графа.
+\texttt{Алгоритм Уоршелла} призначений для роботи з орієнтованими графами,однак у даній лабараторній роботі розглядаються неорієнтовані графи, 
+тому для забезпечення коректної роботи алгоритму 
+матриця суміжності формується симетрично, тобто 
+для кожного ребра $(i,j)$ одночасно встановлюються елементи 
+$\texttt{graph[i][j]} = \texttt{graph[j][i]} = 1$. 
+
+Складність роботи алгоритму: $O(n^3)$.
+
+Нижче наведена сама реалізація:
+\begin{lstlisting}[style=javastyle]
+public class WarshallConnectivity {
+    public static boolean isConnected(int[][] graph) {
+        int n = graph.length;
+        int[][] reach = new int[n][n];
+
+    
+        for (int i = 0; i < n; i++) 
+            System.arraycopy(graph[i], 0, reach[i], 0, n);
+
+    
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                if (reach[i][k] == 0) continue;
+                for (int j = 0; j < n; j++) {
+                    if (reach[i][j] == 0 && reach[k][j] != 0) {
+                        reach[i][j] = 1;
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                if (i != j && reach[i][j] == 0) {
+                    return false;
+                }
+
+        return true;
+    }
+}
+
+\end{lstlisting}
+
+\subsection{Параметри класу}
+\begin{itemize}
+    \item \texttt{int[][] graph}--- вихідна матриця суміжності графа, 
+    де \texttt{graph[i][j] $= 1$}, якщо існує ребро між вершинами $i$ та $j$, 
+    і \texttt{$0$}, якщо ребра немає. 
+
+    \item \texttt{int n}--- кількість вершин у графі. 
+
+    \item \texttt{int[][] reach}--- допоміжна матриця досяжності, 
+    яка поступово оновлюється під час виконання алгоритму. 
+    Початково вона є копією вхідної матриці \texttt{graph}, 
+    а після завершення роботи містить інформацію про наявність шляху 
+    між будь-якими двома вершинами.
+
+    \item Цикли \texttt{for (k, i, j)}--- основна частина алгоритму, 
+    у якій відбувається послідовне оновлення матриці досяжності. 
+    Для кожної проміжної вершини $k$ перевіряється, 
+    чи можна дістатися вершини $j$ з вершини $i$ через $k$. 
+    Якщо так — значення \texttt{reach[i][j]} встановлюється рівним $1$.
+
+    \item Після завершення головного циклу перевіряється, 
+    чи для всіх пар вершин $(i,j)$ виконується умова досяжності. 
+    Якщо існує хоча б одна пара вершин, між якими шлях відсутній, 
+    граф вважається не зв’язним.
+\end{itemize}
+
+\section{Експериментальна робота}
+\subsection{RandomGraphGenerator}
+Для проведення експериментальних досліджень необхідно мати можливість 
+ генерувати випадкові графи різного розміру та щільності. 
+Саме цю функцію виконує допоміжний клас \texttt{RandomGraphGenerator}. 
+Він створює неорієнтовані графи моделі $G(n,p)$, 
+де $n$--- кількість вершин, а $p$--- імовірність появи ребра між будь-якими двома вершинами.
+
+Його реалізація наведена нижче:
+\begin{lstlisting}[style=javastyle
+]
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class RandomGraphGenerator {
+    public static int[][] generateMatrixGraph(int n, double p) {
+        int[][] matrix = new int[n][n];
+        Random rand = new Random();
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (rand.nextDouble() < p) {
+                    matrix[i][j] = 1;
+                    matrix[j][i] = 1;  
+                } else {
+                    matrix[i][j] = 0;
+                    matrix[j][i] = 0;
+                }
+            }
+        }
+        return matrix;
+    }
+
+    public static List<List<Integer>> toAdjList(int[][] matrix) {
+        int n = matrix.length;
+        List<List<Integer>> list = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            List<Integer> neighbors = new ArrayList<>();
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] != 0) {
+                    neighbors.add(j);
+                }
+            }
+            list.add(neighbors);
+        }
+        return list;
+    }
+}
+\end{lstlisting}
+
+Клас складається з двох основних методів:
+\begin{itemize}
+    \item \texttt{generateMatrixGraph(int n, double p)}--- 
+    створює матрицю суміжності розміру $n \times n$, 
+    у якій кожне ребро між вершинами $i$ та $j$ 
+    з’являється з імовірністю $p$. 
+    Матриця заповнюється симетрично, тому отриманий граф є неорієнтованим.
+
+    \item \texttt{toAdjList(int[][] matrix)}--- 
+    перетворює матрицю суміжності у список суміжності. 
+\end{itemize}
+\subsection{Test3}
+Головна мета цього класу — проведення серії експериментів, 
+вимірювання часу роботи алгоритмів і збереження результатів. 
+
+Він:
+\begin{enumerate}
+    \item генерує графи різних розмірів $n$ та щільностей $p$;
+    \item викликає алгоритми \texttt{DFSConnectivity} та \texttt{WarshallConnectivity}
+    по $100$ разів для кожної пари параметрів;
+    \item обчислює середній час виконання;
+    \item записує результати у файл \texttt{graph\_results.csv}:
+\begin{center}
+\includegraphics[width=0.6\linewidth]{Знімок екрана 2025-10-06 о 20.42.23.png}
+\label{fig:results-table}
+\end{center}
+де:
+\begin{itemize}
+    \item \texttt{DFS\_M}~--- час виконання \texttt{DFS} на матричному поданні графа;
+    \item \texttt{DFS\_L}~--- час виконання \texttt{DFS} на списках суміжності;
+    \item \texttt{Warshall}~--- час виконання \texttt{алгоритму Уоршелла}.
+\end{itemize}
+\end{enumerate}
+\subsection{Побудова графіків}
+Для візуалізації отриманих значень було написано програму на мові \texttt{Python},яка виконує такі функції:
+\begin{itemize}
+    \item зчитує файл \texttt{graph\_results.csv} та впорядковує дані за параметрами $n$ та $p$;
+    \item будує графіки залежності середнього часу виконання від кількості вершин $n$ 
+    для кожного фіксованого значення $p$;
+    \item дає змогу порівняти ефективність трьох алгоритмів.
+\end{itemize}
+\subsection{Результати експериментів та інтерпретація даних}
+Після реалізації алгоритмів було проведено експеримент для порівняння часу їх виконання 
+на випадкових графах різного розміру та щільності.  
+
+
+Для початку експерименту у терміналі було введено такі команди:
+\begin{verbatim}
+javac Test3.java
+java Test3
+\end{verbatim}
+
+У процесі виконання в консолі виводяться результати кожного експерименту:  
+кількість вершин $n$, імовірність появи ребра $p$, 
+середній час роботи (у мікросекундах) для кожного алгоритму, 
+а також логічне значення (\texttt{true/false}), яке вказує, 
+чи є граф зв’язним.  
+
+Приклад фрагменту виводу в консолі наведено нижче:
+
+\begin{center}
+\includegraphics[width=0.9\linewidth]{Знімок екрана 2025-10-06 о 21.07.08.png}
+\label{fig:console-output}
+\end{center}
+
+Після завершення роботи програми автоматично формується файл 
+\texttt{graph\_results.csv} з тими ж значеннями,що й були виведені на консоль(але вже без зазначення чи граф зв'язний):
+
+\begin{center}
+\includegraphics[width=0.9\linewidth]{Знімок екрана 2025-10-06 о 21.10.01.png}
+\label{fig:csv-output}
+\end{center}
+
+Для генерування графіків запускаємо програму на \texttt{Python}:
+\begin{verbatim}
+python results.py
+\end{verbatim}
+
+І маємо такі графіки:
+
+\begin{center}
+\includegraphics[width=0.9\linewidth]{Знімок екрана 2025-10-06 о 21.13.09.png}
+\label{fig:csv-output}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.9\linewidth]{Знімок екрана 2025-10-06 о 21.13.17.png}
+\label{fig:csv-output}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.9\linewidth]{Знімок екрана 2025-10-06 о 21.13.24.png}
+\label{fig:csv-output}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.9\linewidth]{Знімок екрана 2025-10-06 о 21.13.32.png}
+\label{fig:csv-output}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.9\linewidth]{Знімок екрана 2025-10-06 о 21.13.38.png}
+\label{fig:csv-output}
+\end{center}
+
+Результатом виконання програми є набір графіків, 
+що показують зміну середнього часу роботи трьох алгоритмів 
+(\texttt{DFS} на матриці, \texttt{DFS} на списках і \texttt{алгоритм Уоршелла}) при різних щільностях графів.
+
+
+Як видно з графіків, рекурсивний \texttt{DFS} на списках суміжності 
+демонструє найменший час виконання на розріджених графах ($p < 0.5$), 
+тоді як \texttt{алгоритм Уоршелла} значно повільніший через кубічну складність $O(n^3)$.  
+У щільних графах ($p \to 1$) час виконання \texttt{DFS} на матричному та списковому представленнях 
+стає майже однаковим, однак обидва варіанти залишаються ефективнішими за \texttt{Уоршелла}.
+\newpage
+\section{Мій репозиторій:} 
+\href{https://github.com/arinacoola/AppliedAlgorithms/tree/main/lab3}
+\end{document}

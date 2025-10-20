@@ -1,0 +1,368 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[ukrainian]{babel}
+\usepackage{geometry}
+\geometry{left=25mm,right=15mm,top=20mm,bottom=20mm}
+\usepackage{setspace}
+\setstretch{1.2}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstdefinestyle{javastyle}{
+    language=Java,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    backgroundcolor=\color{white},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    rulecolor=\color{black},
+    tabsize=4,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=true,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{teal}\itshape,
+    stringstyle=\color{orange},
+    moredelim=[il][\textcolor{gray}]{//},
+    moredelim=[is][\textcolor{gray}]{/*}{*/},
+}
+
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \normalsize
+    НАЦІОНАЛЬНИЙ ТЕХНІЧНИЙ УНІВЕРСИТЕТ УКРАЇНИ\\
+    «КИЇВСЬКИЙ ПОЛІТЕХНІЧНИЙ ІНСТИТУТ ім. Ігоря СІКОРСЬКОГО»\\
+    НАВЧАЛЬНО-НАУКОВИЙ ФІЗИКО-ТЕХНІЧНИЙ ІНСТИТУТ
+    
+    \vfill
+    
+    \LARGE Звіт з дисципліни «Прикладні алгоритми»\\[2em]
+    \Large\textbf{ВАРІАНТ 2}\\[1em]
+    \LARGE\textbf{Реалізація структур даних типу
+UnionFind }\\[0.4em]
+   
+    
+    \vfill
+    
+    \begin{flushright}
+        \large
+        Виконала студентка\\
+        групи ФІ-33\\
+        Зварунчик Аріна Олександрівна
+    \end{flushright}
+    
+    \vspace{3em}
+    Київ — 2025
+\end{titlepage}
+
+\tableofcontents 
+\newpage
+\section{Мета роботи}Опанувати особливості реалізації систем неперетинних множин та властивості структури даних UnionFIind на прикладі застосування в алгоритмі Крускала.
+
+\section{Клас UnionFindList}
+
+Для реалізації алгоритму Крускала використано структуру даних UnionFIind, реалізовану за допомогою списків. Такий підхід дозволяє ефективно підтримувати операції об'єднання множин \texttt{union} та пошуку представника множини \texttt{find}, що необхідні для перевірки належності вершин до однієї компоненти зв’язності.
+
+\begin{lstlisting}[style=javastyle]
+public class UnionFindList {
+    private int n;
+    private int[] head, tail, root, next, size;
+
+    public UnionFindList (int n){
+        makeSet(n);
+    }
+
+    public void makeSet(int n){
+        if(n<0){
+            throw new IllegalArgumentException("n must be >=0");
+        }
+        this.n=n;
+        head=new int[n];
+        tail=new int[n];
+        root=new int[n];
+        next=new int[n];
+        size=new int[n];
+
+        for(int i=0;i<n;i++){
+            head[i]=i;
+            tail[i]=i;
+            root[i]=i;
+            next[i]= -1;
+            size[i]=1;
+        }
+    }
+
+    private void validateIndex(int x) {
+        if (x < 0 || x >= n) {
+            throw new IllegalArgumentException("index out of range: " + x);
+        }
+    }
+
+    public int find(int x){
+        validateIndex(x);
+        return root[x];
+    }
+
+    public boolean sameSet(int x, int y) {
+        validateIndex(x);
+        validateIndex(y);
+        return find(x) == find(y);
+    }
+
+    public int sizeOf(int x) {
+        validateIndex(x);
+        return size[find(x)];
+    }
+
+    public void union(int x,int y){
+        validateIndex(x);
+        validateIndex(y);
+
+        int rx=find(x);
+        int ry=find(y);
+
+        if(rx==ry){
+            return;
+        }
+
+        if(size[rx]<size[ry]){
+            int temp = rx;
+            rx=ry;
+            ry=temp;
+        }
+
+        next[tail[rx]] = head[ry];
+
+        int cur = head[ry];
+        while (cur != -1) {
+            root[cur] = rx;
+            cur = next[cur];
+        }
+
+        tail[rx] = tail[ry];
+        size[rx] += size[ry];
+
+        head[ry] = -1;
+        tail[ry] = -1;
+        size[ry] = 0;
+    }
+}
+\end{lstlisting}
+
+\subsection{Пояснення методів:}
+\begin{itemize}
+    \item \texttt{makeSet(n)} — створює $n$ окремих множин.  
+    \textit{Складність:} $O(n)$.
+    \item \texttt{find(x)} — повертає ідентифікатор множини, до якої належить елемент $x$.  
+    \textit{Складність:} $O(1)$.
+    \item \texttt{sameSet(x, y)} — перевіряє, чи належать елементи $x$ і $y$ до однієї множини.  
+    \textit{Складність:} $O(1)$.
+    \item \texttt{union(x, y)} — об’єднує дві множини. Менша множина приєднується до більшої.  
+    \textit{Складність:} $O(k)$, де $k$ — розмір меншої множини.
+\end{itemize}
+
+\subsection{Особливості реалізації:}
+\begin{itemize}
+    \item Кожна множина представлена зв’язним списком .
+    \item Масиви \texttt{head} і \texttt{tail} зберігають початок і кінець кожного списку.
+    \item Масив \texttt{next} — посилання між вершинами в межах однієї множини.
+    \item Масив \texttt{root} — вказує, до якої множини належить вершина.
+    \item Масив \texttt{size} — розмір множини.
+\end{itemize}
+
+\section{Клас Edge1}
+
+Для представлення ребер графа використовується клас \texttt{Edge1}.  
+Кожне ребро зберігає дві вершини \texttt{u} і \texttt{v} та вагу \texttt{w}.  
+Клас також реалізує інтерфейс \texttt{Comparable<Edge1>} для можливості сортування ребер за вагою, що необхідно для алгоритму Крускала.
+
+\begin{lstlisting}[style=javastyle]
+public final class Edge1 implements Comparable<Edge1>{
+    private final int u;
+    private final int v;
+    private final long w;
+
+    public Edge1(int u,int v,long w){
+        this.u=u;
+        this.v=v;
+        this.w=w;
+    }
+
+    public int getU(){
+        return u;
+    }
+
+    public int getV(){
+        return v;
+    }
+
+    public long getW() {
+        return w;
+    }
+
+    @Override
+    public int compareTo(Edge1 other) {
+        return Long.compare(this.w, other.w);
+    }
+
+    public String toString() {
+        return "(" + u + ", " + v + ", w=" + w + ")";
+    }
+}
+\end{lstlisting}
+
+\subsection{Пояснення:}
+\begin{itemize}
+    \item Поля \texttt{u}, \texttt{v}, \texttt{w} —  початкова вершина, кінцева вершина та вага ребра.
+    \item Метод \texttt{compareTo()} — забезпечує порівняння ребер за вагою \texttt{w} для подальшого сортування.  
+    \textit{Складність:} $O(1)$.
+    \item Метод \texttt{toString()} — використовується для зручного виведення ребра у форматі \texttt{(u, v, w=w)}.
+\end{itemize}
+
+\section{Клас Kruskal}
+
+Клас \texttt{Kruskal} реалізує алгоритм Крускала для побудови мінімального кістякового дерева (MST) у неорієнтованому зваженому графі.  
+\begin{lstlisting}[style=javastyle]
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class Kruskal {
+    private final int n;
+    private final List<Edge1> edges;
+
+    public Kruskal(int n, List<Edge1> edges) {
+        if (n < 0) {
+            throw new IllegalArgumentException("n must be >= 0");
+        }
+        this.n = n;
+        this.edges = new ArrayList<>(edges);
+    }
+
+    public KruskalResult buildMST(boolean edgesAlreadySorted) {
+        List<Edge1> edgesToProcess = this.edges;
+        if (!edgesAlreadySorted) {
+            Collections.sort(edgesToProcess);
+        }
+
+        UnionFindList uf = new UnionFindList(n);
+        List<Edge1> mst = new ArrayList<>();
+        long totalWeight = 0;
+
+        long start = System.nanoTime();
+
+        for (Edge1 e : edgesToProcess) {
+            if (mst.size() == n - 1) break;
+            int u = e.getU();
+            int v = e.getV();
+            if (!uf.sameSet(u, v)) {
+                uf.union(u, v);
+                mst.add(e);
+                totalWeight += e.getW();
+            }
+        }
+
+        long end = System.nanoTime();
+        long elapsedNs = end - start;
+
+        return new KruskalResult(mst, totalWeight, elapsedNs);
+    }
+}
+\end{lstlisting}
+
+\subsection{Пояснення реалізації:}
+\begin{itemize}
+    \item Конструктор \texttt{Kruskal(int n, List<Edge1> edges)} приймає кількість вершин $n$ та список ребер графа.
+    \item Метод \texttt{buildMST()} виконує основні кроки алгоритму:
+    \begin{enumerate}
+        \item Сортує ребра за вагою (якщо ще не відсортовані).
+        \item Ініціалізує структуру \texttt{UnionFindList} для відстеження компонент зв’язності.
+        \item Послідовно перебирає ребра: якщо кінці ребра належать до різних множин — об’єднує їх  і додає ребро до MST.
+        \item Зупиняється, коли знайдено $n-1$ ребро (мінімальне кістякове дерево побудовано).
+    \end{enumerate}
+\end{itemize}
+
+\subsection{Оцінка складності:}
+\begin{itemize}
+    \item Сортування ребер: $O(m \log m)$, де $m$ — кількість ребер.
+    \item Операції \texttt{find()} та \texttt{union()} у реалізації списками мають середню складність $O(k)$, де $k$ — розмір меншої множини.
+    \item Основний цикл обробки ребер: $O(m \cdot k)$.
+    \item У підсумку загальна складність реалізації — приблизно $O(m \log m + m \cdot k)$.
+\end{itemize}
+
+\subsection{Особливості:}
+\begin{itemize}
+    \item Метод може виключати час сортування з підрахунку (через параметр \texttt{edgesAlreadySorted}).
+    \item Алгоритм працює лише для зв’язних неорієнтованих графів.
+    \item Результат повертається у вигляді об’єкта класу \texttt{KruskalResult}, який містить MST, його сумарну вагу та час виконання.
+\end{itemize}
+
+\section{Експериментальні дослідження}
+
+\subsection{Опис тестування}
+
+Для оцінки ефективності реалізованого алгоритму було проведено серію експериментів із різною кількістю вершин графа $n$.  
+У тестах використовувався випадково згенерований неорієнтований зважений граф, де кількість ребер обчислювалася за формулою:
+\[
+m = 5n
+\]
+тобто для кожної вершини у середньому створювалося 5 ребер.
+
+Код для тестування наведено нижче:
+
+\begin{lstlisting}[style=javastyle]
+try (PrintWriter pw = new PrintWriter("results1.csv")) {
+    pw.println("n,m,MST_weight,Time_ms");
+    for (int n : vertexCounts) {
+        int m = n * 5;
+        List<Edge1> edges = generateRandomGraphEdges(n, m, maxWeight, rnd);
+        Collections.sort(edges);
+
+        Kruskal kr = new Kruskal(n, edges);
+        KruskalResult res = kr.buildMST(true);
+
+        pw.printf("%d,%d,%d,%.6f\n",
+                n, m, res.getTotalWeight(), res.getElapsedNs() / 1e6);
+    }
+} catch (Exception e) {
+    e.printStackTrace();
+}
+\end{lstlisting}
+Після виконання програми результати експериментів було збережено у файл \texttt{results1.csv} :
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{Знімок екрана 2025-10-20 о 20.57.24.png}
+\label{fig:graph}
+\end{figure}
+\newpage
+\subsection{Результати експериментів}
+Отримані результати наведено у таблиці,для кращого розуміння:
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{Знімок екрана 2025-10-20 о 21.02.03.png}
+\label{fig:graph}
+\end{figure}
+
+\subsection{Графічне представлення результатів}
+
+На рисунку показано залежність часу виконання алгоритму від кількості вершин графа.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{Знімок екрана 2025-10-20 о 21.06.08.png}
+
+\label{fig:graph}
+\end{figure}
+
+
+Як видно з графіка, час виконання алгоритму зростає майже лінійно зі збільшенням кількості вершин, що відповідає теоретичній оцінці.
+\section{Мій репозиторій:}
+\href{https://github.com/arinacoola/AppliedAlgorithms/tree/main/lab4}
+
+\end{document}

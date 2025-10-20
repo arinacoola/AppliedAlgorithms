@@ -62,7 +62,7 @@ public class UnionFindList {
             rx=ry;
             ry=temp;
         }
-        git add .
+
 
         next[tail[rx]] = head[ry];
 

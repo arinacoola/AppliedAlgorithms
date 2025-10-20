@@ -27,7 +27,9 @@ public class UnionFindList {
     }
 
     private void validateIndex(int x) {
-        if (x < 0 || x >= n) throw new IllegalArgumentException("index out of range: " + x);
+        if (x < 0 || x >= n) {
+            throw new IllegalArgumentException("index out of range: " + x);
+        }
     }
 
     public int find(int x){

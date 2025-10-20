@@ -21,4 +21,8 @@ public final class Edge1 implements Comparable<Edge1>{
     public int compareTo(Edge1 other) {
         return  Long.compare(this.w, other.w);
     }
+
+    public String toString() {
+        return "(" + u + ", " + v + ", w=" + w + ")";
+    }
 }

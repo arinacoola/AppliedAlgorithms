@@ -1,0 +1,382 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[ukrainian]{babel}
+\usepackage{geometry}
+\geometry{left=25mm,right=15mm,top=20mm,bottom=20mm}
+\usepackage{setspace}
+\usepackage{amsmath}
+\setstretch{1.2}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstdefinestyle{javastyle}{
+    language=Java,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    backgroundcolor=\color{white},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    rulecolor=\color{black},
+    tabsize=4,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=true,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{teal}\itshape,
+    stringstyle=\color{orange},
+    moredelim=[il][\textcolor{gray}]{//},
+    moredelim=[is][\textcolor{gray}]{/*}{*/},
+}
+
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \normalsize
+    НАЦІОНАЛЬНИЙ ТЕХНІЧНИЙ УНІВЕРСИТЕТ УКРАЇНИ\\
+    «КИЇВСЬКИЙ ПОЛІТЕХНІЧНИЙ ІНСТИТУТ ім. Ігоря СІКОРСЬКОГО»\\
+    НАВЧАЛЬНО-НАУКОВИЙ ФІЗИКО-ТЕХНІЧНИЙ ІНСТИТУТ
+    
+    \vfill
+    
+    \LARGE Звіт з дисципліни «Прикладні алгоритми»\\[2em]
+    \LARGE\textbf{Розвʼязання систем лінійних рівнянь за
+допомогою LUP-розкладу}\\[0.4em]
+   
+    
+    \vfill
+    
+    \begin{flushright}
+        \large
+        Виконала студентка\\
+        групи ФІ-33\\
+        Зварунчик Аріна Олександрівна
+    \end{flushright}
+    
+    \vspace{3em}
+    Київ — 2025
+\end{titlepage}
+
+\tableofcontents 
+\newpage
+\section{Мета роботи}Навчитись розвʼязувати системи лінійних рівнянь та опанувати способи робити це ефективно з точки зору реалізації.
+
+\section{Клас Matrix}
+Клас \texttt{Matrix} реалізує основні операції над квадратними матрицями, необхідні для розв’язання систем лінійних рівнянь методом LUP-розкладу.  
+
+
+\begin{lstlisting}[style=javastyle]
+public class Matrix {
+    int n;              
+    double[][] el;      
+}
+\end{lstlisting}
+
+Поле \texttt{n} зберігає розмір матриці, а \texttt{el} — її елементи. 
+
+
+\subsection{Конструктори}
+\begin{itemize}
+  \item \texttt{Matrix(int n)} — створює нульову матрицю $n \times n$.
+  \item \texttt{Matrix(double[][] newEl)} — створює копію матриці на основі вже існуючого двовимірного масиву.
+\end{itemize}
+
+\begin{lstlisting}[style=javastyle]
+public Matrix(int n) {
+    this.n = n;
+    this.el = new double[n][n];
+}
+
+public Matrix(double[][] newEl) {
+    this.n = newEl.length;
+    this.el = new double[n][n];
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            this.el[i][j] = newEl[i][j];
+        }
+    }
+}
+\end{lstlisting}
+
+
+\subsection{Методи доступу до елементів}
+\begin{lstlisting}[style=javastyle]
+public double get(int i, int j)
+public void set(int i, int j, double val) 
+\end{lstlisting}
+
+Метод \texttt{get()} повертає елемент $a_{ij}$, а \texttt{set()} змінює його значення.  
+
+
+\subsection{Обмін рядків}
+\begin{lstlisting}[style=javastyle]
+public void swapRows(int i, int j)
+\end{lstlisting}
+Цей метод міняє місцями рядки $i$ та $j$. Він використовується під час вибору головного елемента у LUP-розкладі.
+
+\subsection{Арифметичні операції над матрицями}
+Клас підтримує додавання, віднімання, множення матриць та множення матриць на вектор:
+\begin{lstlisting}[style=javastyle]
+public Matrix add(Matrix other)
+public Matrix sub(Matrix other)
+public Matrix multiply(Matrix other)
+public double[] multiplyVector(double[] vector)
+\end{lstlisting}
+
+\subsection{Множення матриці на вектор}
+Метод реалізує добуток матриці $A$ на вектор $b$, що  важливо при перевірці правильності розв’язку системи $A \cdot x = b$.
+
+\subsection{Допоміжні методи}
+\begin{itemize}
+  \item \texttt{identity(int n)} — створює одиничну матрицю $I_n$.
+  \item \texttt{copy()} — повертає копію поточної матриці.
+\end{itemize}
+
+\begin{lstlisting}[style=javastyle]
+public static Matrix identity(int n) {
+    Matrix I = new Matrix(n);
+    for (int i = 0; i < n; i++) {
+        I.set(i, i, 1.0);
+    }
+    return I;
+}
+
+public Matrix copy(){
+        double[][] newEl = new double[n][n];
+        for(int i=0;i<n;i++){
+            for(int j=0; j<n;j++){
+                newEl[i][j] = this.get(i, j);
+            }
+        }
+        Matrix copy = new Matrix(newEl);
+        return copy;
+
+}
+\end{lstlisting}
+
+
+\section{Клас LUP}
+Клас \texttt{LUP} реалізує алгоритм LUP-розкладу квадратної матриці та розв’язання систем лінійних рівнянь виду
+\[
+A \cdot x = b.
+\]
+Метод базується на розкладанні початкової матриці $A$ у вигляді:
+\[
+P \cdot A = L \cdot U,
+\]
+де $L$ — нижня трикутна матриця, $U$ — верхня трикутна, $P$ — матриця перестановок.
+
+\begin{lstlisting}[style=javastyle]
+public class LUP {
+    private Matrix L;
+    private Matrix U;
+    private Matrix P;
+    private int swaps;
+}
+\end{lstlisting}
+
+\begin{itemize}
+  \item \texttt{swaps} — лічильник кількості перестановок .
+\end{itemize}
+
+\subsection{Конструктор}
+\begin{lstlisting}[style=javastyle]
+public LUP(Matrix A) {
+    U = A.copy();
+    int n = A.n;
+    L = new Matrix(n);
+    P = Matrix.identity(n);
+    swaps = 0;
+
+    for (int k = 0; k < n; k++) {
+        int pivot = k;
+        double max = Math.abs(U.get(k, k));
+
+        for (int i = k + 1; i < n; i++) {
+            double val = Math.abs(U.get(i, k));
+            if (val > max) {
+                max = val;
+                pivot = i;
+            }
+        }
+
+        if (U.get(pivot, k) == 0) {
+            throw new ArithmeticException("Matrix is singular");
+        }
+
+        if (pivot != k) {
+            U.swapRows(k, pivot);
+            P.swapRows(k, pivot);
+
+            if (k > 0) {
+                for (int j = 0; j < k; j++) {
+                    double temp = L.get(k, j);
+                    L.set(k, j, L.get(pivot, j));
+                    L.set(pivot, j, temp);
+                }
+            }
+            swaps++;
+        }
+
+        for (int i = k + 1; i < n; i++) {
+            double factor = U.get(i, k) / U.get(k, k);
+            L.set(i, k, factor);
+            for (int j = k; j < n; j++) {
+                double value = U.get(i, j) - factor * U.get(k, j);
+                U.set(i, j, value);
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        L.set(i, i, 1.0);
+    }
+}
+\end{lstlisting}
+
+Алгоритм проходить усі стовпці матриці $A$, виконуючи такі дії:
+\begin{enumerate}
+  \item Вибір головного елемента у поточному стовпці.
+  \item Перестановка рядків матриць $U$ і $P$.
+  \item Занесення коефіцієнтів під головним елементом до матриці $L$.
+  \item Модифікація рядків нижче поточного, щоб обнулити елементи під діагоналлю.
+\end{enumerate}
+
+У результаті отримуємо:
+\[
+A = P^{-1} \cdot L \cdot U.
+\]
+
+\subsection{Метод розв’язання системи рівнянь}
+\begin{lstlisting}[style=javastyle]
+public double[] solve(double[] b) {
+    double[] rightB = P.multiplyVector(b);
+    int n = rightB.length;
+
+    double[] y = new double[n];
+    for (int i = 0; i < n; i++) {
+        double sum = 0;
+        for (int j = 0; j < i; j++) {
+            sum += L.get(i, j) * y[j];
+        }
+        y[i] = rightB[i] - sum;
+    }
+
+    double[] x = new double[n];
+    for (int i = n - 1; i >= 0; i--) {
+        double sum = 0;
+        for (int j = i + 1; j < n; j++) {
+            sum += U.get(i, j) * x[j];
+        }
+        x[i] = (y[i] - sum) / U.get(i, i);
+    }
+
+    return x;
+}
+\end{lstlisting}
+
+Розв’язання системи $A \cdot x = b$ виконується у два етапи:
+\begin{enumerate}
+  \item \textbf{Прямий хід:} знаходимо вектор $y$ з рівняння $L \cdot y = P \cdot b$.
+  \item \textbf{Зворотний хід:} знаходимо вектор $x$ із $U \cdot x = y$.
+\end{enumerate}
+
+\subsection{Методи доступу}
+\begin{lstlisting}[style=javastyle]
+public Matrix getL() { return L; }
+public Matrix getU() { return U; }
+public Matrix getP() { return P; }
+public int getSwaps() { return swaps; }
+\end{lstlisting}
+
+Вони дозволяють отримати матриці розкладу та кількість перестановок для подальшого аналізу.
+
+
+
+\section{Перевірка каректності реалізації}
+Клас \texttt{TestSLS} використовується для перевірки правильності реалізації методів класів \texttt{Matrix} та \texttt{LUP}.  
+Він містить метод \texttt{main()}, у якому задається система лінійних рівнянь, виконується LUP-розклад матриці та обчислюється вектор розв’язку $x$.
+
+
+Для перевірки роботи програми була використана невелика система  $3 \times 3$:
+
+\[
+\left\{
+\begin{aligned}
+2x_1 + x_2 + x_3 &= 5 \\
+4x_1 - 6x_2 &= -2 \\
+-2x_1 + 7x_2 + 2x_3 &= 9
+\end{aligned}
+\right.
+\]
+
+
+
+Ця система була обрана, щоб зручно перевірити результат і вручну, і за допомогою онлайн-калькулятора.
+
+\subsection{Реалізація методу \texttt{main}}
+\begin{lstlisting}[style=javastyle]
+public class TestSLS {
+    public static void main(String[] args) {
+        double[][] dataA = {
+            {2, 1, 1},
+            {4, -6, 0},
+            {-2, 7, 2}
+        };
+        double[] b = {5, -2, 9};
+
+        Matrix A = new Matrix(dataA);
+        LUP lup = new LUP(A);
+        double[] x = lup.solve(b);
+
+        System.out.println("Solution of the system::");
+        for (int i = 0; i < x.length; i++) {
+            System.out.printf("x%d = %.6f%n", i + 1, x[i]);
+        }
+
+        System.out.println("\nVerification: A·x ≈ b");
+        double[] check = A.multiplyVector(x);
+        for (int i = 0; i < check.length; i++) {
+            System.out.printf("b[%d] = %.6f (expected %.6f)%n", i + 1, check[i], b[i]);
+        }
+    }
+}
+\end{lstlisting}
+\subsection{Результат виконання програми}
+Після запуску програми вивід виглядав так:
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{Знімок екрана 2025-11-03 о 01.46.30.png}
+\label{fig:lup}
+\end{figure}
+
+Отже, знайдені значення:
+\[
+x_1 = 1, \quad x_2 = 1, \quad x_3 = 2
+\]
+повністю задовольняють систему рівнянь.
+
+\subsection{Перевірка результатів у онлайн-калькуляторі}
+Для незалежної перевірки результатів було використано сайт:
+\href{https://matrixcalc.org/uk/slu.html#solve-using-Cramer%27s-rule%28%7B%7B2,1,1,5%7D,%7B4,-6,0,-2%7D,%7B-2,7,2,9%7D%7D%29}
+
+Після обчислення калькулятор також показав:
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\textwidth]{Знімок екрана 2025-11-03 о 01.49.49.png}
+\label{fig:lupcalc}
+\end{figure}
+
+
+Отримані результати повністю збігаються з результатами, отриманими за допомогою онлайн-калькулятора.  
+Це підтверджує коректність роботи програми в цілому.
+\section{Мій репозиторій:}
+\href{https://github.com/arinacoola/AppliedAlgorithms/tree/main/lab5}
+
+\end{document}

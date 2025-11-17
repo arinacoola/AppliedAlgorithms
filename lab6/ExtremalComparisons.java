@@ -10,7 +10,7 @@ public class ExtremalComparisons {
         for (int n = 1; n <= MAX_N; n++) {
             long shifts = factorial(n);
             if (shifts > 5_000_000) {
-                System.out.println("n = " + n + " → " + shifts +
+                System.out.println("n = " + n + " -> " + shifts +
                         " We will not calculate this value n, because it will take too much time.");
                 break;
             }

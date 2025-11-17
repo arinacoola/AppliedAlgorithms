@@ -49,7 +49,6 @@ public class ExtremalComparisons {
             metrics.reset();
             sorter.sort(arr, metrics);
             long cmp = metrics.comparison;
-
             if (cmp < res.minComparisons) {
                 res.minComparisons = cmp;
                 res.minPerm = Arrays.copyOf(a, a.length);

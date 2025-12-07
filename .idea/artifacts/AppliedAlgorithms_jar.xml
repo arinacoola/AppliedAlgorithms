@@ -3,9 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/AppliedAlgorithms_jar</output-path>
     <root id="archive" name="AppliedAlgorithms.jar">
       <element id="module-output" name="AppliedAlgorithms" />
-      <element id="extracted-dir" path="$USER_HOME$/Downloads/jcommon-1.0.23.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/Downloads/jfreechart-1.0.19.jar" path-in-jar="/" />
-      <element id="dir-copy" path="$PROJECT_DIR$/lab6" />
+      <element id="library" level="project" name="jcommon-1.0.23" />
     </root>
   </artifact>
 </component>

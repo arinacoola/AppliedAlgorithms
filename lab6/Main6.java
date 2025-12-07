@@ -55,15 +55,15 @@ public class Main6 {
     private static int[] createData(int n, int type) {
         switch (type) {
             case 1:
-                return DataGenerator.randArray(n, 0, 1_000_000);
+                return DataGenerator7.randArray(n, 0, 1_000_000);
             case 2:
-                return DataGenerator.sortedArray(n);
+                return DataGenerator7.sortedArray(n);
             case 3:
-                return DataGenerator.reverseSortedArray(n);
+                return DataGenerator7.reverseSortedArray(n);
             case 4:
-                return DataGenerator.almostSortedArray(n);
+                return DataGenerator7.almostSortedArray(n);
             case 5:
-                return DataGenerator.fewUniqueArray(n, 5);
+                return DataGenerator7.fewUniqueArray(n, 5);
         }
         return new int[0];
     }
